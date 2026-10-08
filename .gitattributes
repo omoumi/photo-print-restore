@@ -1,0 +1,47 @@
+# ==========================================================================
+#  photo-print-restore -- line endings and diff behaviour
+#
+#  Development happens on Windows; the repository stores LF. Without this,
+#  every file committed from Windows arrives with CRLF and anyone on Linux
+#  or macOS sees the whole file as changed.
+# ==========================================================================
+
+# Normalise everything git decides is text: LF in the repository, and each
+# system's own line ending in the working tree (CRLF on Windows, LF
+# elsewhere).
+* text=auto
+
+# Batch files are the exception. cmd.exe needs CRLF; a .bat checked out with
+# LF can fail in ways that are hard to trace, so force it everywhere.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Explicitly text, so no heuristic has to guess.
+*.py    text diff=python
+*.md    text
+*.json  text
+*.csv   text
+*.txt   text
+*.cfg   text
+*.toml  text
+*.yml   text
+*.yaml  text
+LICENSE text
+
+# Explicitly binary: never normalised, never shown as a diff.
+*.tif   binary
+*.tiff  binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.bmp   binary
+*.webp  binary
+*.icc   binary
+*.icm   binary
+*.npz   binary
+*.onnx  binary
+
+# Keep development-only files out of the source archive GitHub builds for a
+# release, so a downloaded tarball holds only what the project ships.
+.gitignore     export-ignore
+.gitattributes export-ignore

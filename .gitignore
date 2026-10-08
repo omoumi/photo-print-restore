@@ -1,0 +1,88 @@
+# ==========================================================================
+#  photo-print-restore -- what never enters the repository
+#
+#  This project processes private photographs. The rules below are ordered
+#  by how much it would matter if one failed: the images first, then the
+#  files that carry their names and paths, then ordinary cruft.
+# ==========================================================================
+
+# --- scans and anything derived from them ---------------------------------
+# Every stage reads and writes images. None of them belong in git: they are
+# large, they are binary, and they are private.
+*.tif
+*.tiff
+*.png
+*.jpg
+*.jpeg
+*.jfif
+*.bmp
+*.webp
+
+# Documentation images are the one exception. Put anything the README needs
+# under docs/, and any redistributable test image under sample/, and check
+# what you are adding before you add it.
+!docs/**
+!sample/**
+
+# --- stage output folders -------------------------------------------------
+# Named explicitly as well, so a folder still stays out if a new format is
+# ever written into one.
+json files/
+seam_previews/
+seam-repaired/
+detect_review/
+deskewed-cropped/
+organize_review/
+organized/
+restore_review/
+restored/
+colorize_guides/
+colorize_preview/
+colorized/
+calibration_preview/
+
+# --- project files and corrections ----------------------------------------
+# Small and text, which makes them tempting. They also record the name,
+# pixel size and often the full Windows path of every scan in the archive,
+# or describe what is in the photographs, which is exactly what should not
+# be published.
+boxes_*.json
+orientation_suggestions.json
+organize_overrides.txt
+restore_overrides.txt
+colorize_hints.txt
+calibration_sources.json
+*.csv
+
+# --- downloaded models ----------------------------------------------------
+# The face model of Stage 2, downloaded on first use; its licence does not
+# allow redistributing it here.
+models/
+*.onnx
+
+# --- files left by an interrupted run -------------------------------------
+*.part
+*.tmp
+*.tmp.npz
+
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# --- editors and operating systems ----------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+.DS_Store

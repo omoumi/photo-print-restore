@@ -1,0 +1,232 @@
+{
+  "1": {
+    "class_type": "UnetLoaderGGUF",
+    "inputs": {
+      "unet_name": "qwen-image-edit-2511-Q4_K_M.gguf"
+    },
+    "_meta": {
+      "title": "Model (GGUF)"
+    }
+  },
+  "2": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 3.1
+    }
+  },
+  "3": {
+    "class_type": "CFGNorm",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "strength": 1.0
+    }
+  },
+  "4": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "lora_name": "Qwen-Image-Edit-2511-Lightning-8steps-V1.0-bf16.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Lightning LoRA (8 steps)"
+    }
+  },
+  "5": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "6": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "7": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "print.png"
+    },
+    "_meta": {
+      "title": "Load Image (choose the B&W print)"
+    }
+  },
+  "8": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": [
+        "7",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "megapixels": 2.0,
+      "resolution_steps": 16
+    },
+    "_meta": {
+      "title": "Scale to 2 MP"
+    }
+  },
+  "9": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "5",
+        0
+      ],
+      "image1": [
+        "8",
+        0
+      ],
+      "prompt": "Colorize this black-and-white photograph with natural, realistic and slightly muted colours, like an ordinary colour photograph of the same time, not vivid or saturated. Where the colour of something cannot be told from the photograph, keep it neutral (white or grey) rather than giving it a bright colour. Keep everything else exactly as it is: the composition, the people, their faces and expressions, and every detail."
+    },
+    "_meta": {
+      "title": "Prompt"
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "5",
+        0
+      ],
+      "image1": [
+        "8",
+        0
+      ],
+      "prompt": ""
+    },
+    "_meta": {
+      "title": "Negative (empty)"
+    }
+  },
+  "11": {
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "inputs": {
+      "conditioning": [
+        "17",
+        0
+      ],
+      "reference_latents_method": "index_timestep_zero"
+    }
+  },
+  "12": {
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "inputs": {
+      "conditioning": [
+        "18",
+        0
+      ],
+      "reference_latents_method": "index_timestep_zero"
+    }
+  },
+  "13": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "8",
+        0
+      ],
+      "vae": [
+        "6",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "12",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ],
+      "seed": 220476035819595,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "6",
+        0
+      ]
+    }
+  },
+  "16": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "15",
+        0
+      ],
+      "filename_prefix": "colorize_by_hand"
+    }
+  },
+  "17": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "9",
+        0
+      ],
+      "latent": [
+        "13",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Reference (same size as output)"
+    }
+  },
+  "18": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "10",
+        0
+      ],
+      "latent": [
+        "13",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Reference (negative)"
+    }
+  }
+}
